@@ -1,4 +1,4 @@
-if (!dir.exists("R")) stop("Run this script from the repository root.", call. = FALSE)
+if (!dir.exists("R")) stop("Run this script from the Project directory.", call. = FALSE)
 
 output_csv <- file.path("results", "tables", "smoke_test_metrics.csv")
 quick_table_ok <- function(path, min_rows = 1) {

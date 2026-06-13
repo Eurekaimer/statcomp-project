@@ -1,6 +1,6 @@
 # Convergence diagnostics experiment
 # Compares multiple independent chains for convergence assessment
-if (!dir.exists("R")) stop("Run this script from the repository root.", call. = FALSE)
+if (!dir.exists("R")) stop("Run this script from the Project directory.", call. = FALSE)
 
 source("R/load_project.R")
 load_project()

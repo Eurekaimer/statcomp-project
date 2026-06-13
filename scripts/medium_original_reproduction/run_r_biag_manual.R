@@ -4,7 +4,7 @@
 # writes results to results/medium_original_reproduction/tables/r_results.csv
 #
 # Usage (in RStudio Console):
-#   setwd("C:/Users/HuangZg/OneDrive/Desktop/SC-project-r/Project")
+#   setwd("<path-to-project>/Project")
 #   source("scripts/medium_original_reproduction/run_r_biag_manual.R")
 
 suppressMessages({

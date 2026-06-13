@@ -15,9 +15,6 @@ if not os.path.exists(metrics_csv):
 
 with open(metrics_csv, newline="") as f:
     rows = list(csv.DictReader(f))
-for r in rows:
-    if r.get("implementation") == "C":
-        r["implementation"] = "Python"
 print(f"Loaded {len(rows)} rows")
 
 os.makedirs(REPORT_TABLES, exist_ok=True)
@@ -58,7 +55,8 @@ for (eg, p, method, impl), vals in sorted(agg.items()):
 # =====================================================================
 # TABLE A: Order MCMC experiment (p=9, 37) — compact
 # =====================================================================
-exp_name = {"order_mcmc": "Order MCMC (F\\&K 2003)", "partition_mcmc": "Partition MCMC (K\\&M 2017)"}
+exp_name = {"order_mcmc": "Order MCMC (F\\&K 2003)", "partition_mcmc": "Partition MCMC (K\\&M 2017)",
+            "hybrid_iterative": "Hybrid/Iter (KSM 2022)"}
 impl_short = {"Python": "Py", "BiDAG": "BD", "manual_R": "mR"}
 
 with open(os.path.join(REPORT_TABLES, "medium_original_summary.tex"), "w", encoding="utf-8") as f:
@@ -69,11 +67,13 @@ with open(os.path.join(REPORT_TABLES, "medium_original_summary.tex"), "w", encod
     f.write(r"\setlength{\tabcolsep}{3pt}" + "\n")
     f.write(r"\begin{tabular}{c c l l c c c c}" + "\n")
     f.write(r"\toprule" + "\n")
-    f.write(r"$p$ & Experiment & Method & Impl & Best SHD & F1 & TPR & Time(s) \\" + "\n")
+    f.write(r"$p$ & Experiment & Method & Impl & Mean SHD & F1 & TPR & Time(s) \\" + "\n")
     f.write(r"\midrule" + "\n")
 
     last_p = None
-    for ar in agg_rows:
+    exp_order = {"partition_mcmc": 0, "order_mcmc": 1, "hybrid_iterative": 2}
+    impl_order = {"Python": 0, "manual_R": 1, "BiDAG": 2}
+    for ar in sorted(agg_rows, key=lambda x: (x["p"], exp_order.get(x["exp_group"], 99), x["method"], impl_order.get(x["impl"], 99))):
         if ar["p"] != last_p:
             if last_p is not None:
                 f.write(r"\addlinespace[2pt]" + "\n")
@@ -101,10 +101,10 @@ with open(os.path.join(REPORT_TABLES, "order_vs_structure_gap.tex"), "w", encodi
     f.write(r"$p$ & Data source & Order SHD & Order F1 & Struct SHD & Struct F1 & $\Delta$SHD \\" + "\n")
     f.write(r"\midrule" + "\n")
     for p in [5, 9, 14, 20, 37]:
-        o_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="c_order" and r["status"]=="success"]
-        s_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="c_structure" and r["status"]=="success"]
-        o_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="c_order" and r["status"]=="success"]
-        s_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="c_structure" and r["status"]=="success"]
+        o_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="python_order" and r["status"]=="success"]
+        s_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="python_structure" and r["status"]=="success"]
+        o_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="python_order" and r["status"]=="success"]
+        s_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="python_structure" and r["status"]=="success"]
         if o_s and s_s:
             ds_map = {5: "toy", 9: "flare", 14: "boston", 20: "large", 37: "alarm"}
             o_shd, s_shd = sum(o_s)/len(o_s), sum(s_s)/len(s_s)
@@ -123,11 +123,11 @@ print("Written: order_vs_structure_gap.tex")
 with open(os.path.join(REPORT_TABLES, "implementation_comparison.tex"), "w", encoding="utf-8") as f:
     f.write(r"\begin{table}[htbp]" + "\n")
     f.write(r"\centering" + "\n")
-    f.write(r"\caption{各维度 $p$ 下最优方法及三种实现的最高 F1}" + "\n")
+    f.write(r"\caption{各维度 $p$ 下的最高单次 F1 及三种实现的最高 F1}" + "\n")
     f.write(r"\label{tab:impl_compare}" + "\n")
     f.write(r"\begin{tabular}{c l c c c c c}" + "\n")
     f.write(r"\toprule" + "\n")
-    f.write(r"$p$ & Best Method & SHD & F1 & Python F1 & BiDAG F1 & manual F1 \\" + "\n")
+    f.write(r"$p$ & Best Single Run & SHD & F1 & Python F1 & BiDAG F1 & manual F1 \\" + "\n")
     f.write(r"\midrule" + "\n")
     for p in [5, 9, 14, 20, 37]:
         best = max((r for r in rows if int(r["p"])==p and r["status"]=="success"),
@@ -162,11 +162,11 @@ plt.rcParams.update({
 
 # Okabe-Ito colorblind-friendly palette (subset)
 IMPL_COLORS = {"Python": "#D55E00", "BiDAG": "#0072B2", "manual_R": "#009E73"}
-METHOD_MARKERS = {"c_order": "o", "c_structure": "X", "order": "D", "partition": "s",
+METHOD_MARKERS = {"python_order": "o", "python_structure": "X", "order": "D", "partition": "s",
                   "manual_order": "o", "manual_structure": "X", "manual_partition": "v",
                   "iterative": "P"}
 IMPL_ALPHA = {"Python": 0.82, "BiDAG": 0.92, "manual_R": 0.72}
-METHOD_ALPHA = {"c_order": 1.0, "c_structure": 0.55, "order": 1.0, "partition": 1.0,
+METHOD_ALPHA = {"python_order": 1.0, "python_structure": 0.55, "order": 1.0, "partition": 1.0,
                 "manual_order": 1.0, "manual_structure": 0.55, "manual_partition": 0.8, "iterative": 1.0}
 
 success = [r for r in rows if r["status"] == "success"]
@@ -251,58 +251,16 @@ fig.savefig(os.path.join(REPORT_FIGS, "medium_runtime_compare.png"))
 plt.close()
 print("Generated: medium_runtime_compare.png")
 
-# ---- Feasibility heatmap (now with better colors) ----
-all_combos = []
-for method in ["order", "partition", "c_order", "c_structure", "manual_order", "manual_structure", "manual_partition"]:
-    for impl in ["Python", "BiDAG", "manual_R"]:
-        # Filter combos that actually exist in data
-        exists = any(r["method"]==method and r["implementation"]==impl for r in rows)
-        if exists:
-            all_combos.append((method, impl))
-
-labels = [f"{m}\n({impl_short.get(i,i)})" for m, i in all_combos]
-grid = np.zeros((len(all_combos), len(ps)))
-for ri, (method, impl) in enumerate(all_combos):
-    for pi, p in enumerate(ps):
-        vals = [r for r in rows if int(r["p"])==p and r["method"]==method and r["implementation"]==impl]
-        if not vals: grid[ri, pi] = 0  # not run
-        else:
-            ok = sum(1 for r in vals if r["status"]=="success")
-            grid[ri, pi] = ok / len(vals)  # fraction successful
-
-fig, ax = plt.subplots(figsize=(10, len(all_combos)*0.55+1.2))
-im = ax.imshow(grid, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
-ax.set_xticks(range(len(ps))); ax.set_xticklabels(ps, fontsize=11)
-ax.set_yticks(range(len(all_combos))); ax.set_yticklabels(labels, fontsize=8.5)
-ax.set_xlabel("Number of nodes (p)", fontsize=12)
-ax.set_title("Implementation Feasibility Map (green = 100% success)", fontweight="bold")
-
-# Add text annotations
-for ri in range(len(all_combos)):
-    for pi in range(len(ps)):
-        val = grid[ri, pi]
-        color = "white" if val < 0.5 else "black"
-        if val > 0:
-            ax.text(pi, ri, f"{val:.0%}" if val==1 else f"{val:.0%}", ha="center", va="center",
-                   fontsize=8, color=color, fontweight="bold")
-
-cbar = plt.colorbar(im, ax=ax, shrink=0.8)
-cbar.set_label("Success Rate", fontsize=10)
-plt.tight_layout()
-fig.savefig(os.path.join(REPORT_FIGS, "manual_vs_bidag_feasibility.png"), bbox_inches="tight")
-plt.close()
-print("Generated: manual_vs_bidag_feasibility.png")
-
 # ---- SHD gap bar chart ----
 fig, ax = plt.subplots(figsize=(7.5, 4.5))
 ax.set_facecolor("#F8F8F8")
 ps_plot = [5, 9, 14, 20, 37]
 gaps, f1_drops = [], []
 for p in ps_plot:
-    o_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="c_order" and r["status"]=="success"]
-    s_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="c_structure" and r["status"]=="success"]
-    o_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="c_order" and r["status"]=="success"]
-    s_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="c_structure" and r["status"]=="success"]
+    o_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="python_order" and r["status"]=="success"]
+    s_s = [float(r["SHD"]) for r in rows if int(r["p"])==p and r["method"]=="python_structure" and r["status"]=="success"]
+    o_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="python_order" and r["status"]=="success"]
+    s_f = [float(r["F1"]) for r in rows if int(r["p"])==p and r["method"]=="python_structure" and r["status"]=="success"]
     if o_s and s_s:
         gaps.append(sum(s_s)/len(s_s) - sum(o_s)/len(o_s))
         f1_drops.append(sum(o_f)/len(o_f) - sum(s_f)/len(s_f))

@@ -46,13 +46,23 @@ plt.rcParams.update({
     "axes.edgecolor": "#222222",
     "axes.linewidth": 0.8,
 })
+# Colorblind-friendly scientific palette based on Okabe-Ito colors.
 PALETTE = {
-    "order": "#222222",
-    "partition": "#666666",
-    "iterative": "#9A9A9A",
-    "manual_order": "#222222",
-    "manual_partition": "#666666",
-    "manual_structure": "#9A9A9A",
+    "order": "#0072B2",
+    "partition": "#D55E00",
+    "iterative": "#009E73",
+    "manual_order": "#0072B2",
+    "manual_partition": "#D55E00",
+    "manual_structure": "#009E73",
+}
+COMPARISON_COLORS = {
+    ("BiDAG", "order", "N/A"): "#0072B2",
+    ("BiDAG", "partition", "N/A"): "#D55E00",
+    ("manual", "manual_structure", "2"): "#009E73",
+    ("manual", "manual_order", "2"): "#56B4E9",
+    ("manual", "manual_order", "3"): "#CC79A7",
+    ("manual", "manual_partition", "2"): "#E69F00",
+    ("manual", "manual_partition", "3"): "#F0E442",
 }
 LINESTYLES = {
     "order": "-",
@@ -341,7 +351,10 @@ def plot_manual_bidag_comparison():
     g["_rank"] = g.apply(lambda r: rank[(r["implementation"], r["method"], str(r["K"]))], axis=1)
     g = g.sort_values("_rank")
     g["label"] = g.apply(label, axis=1)
-    colors = ["#2B2B2B", "#4A4A4A", "#9A9A9A", "#777777", "#555555", "#888888", "#666666"]
+    colors = [
+        COMPARISON_COLORS[(row["implementation"], row["method"], str(row["K"]))]
+        for _, row in g.iterrows()
+    ]
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
     for ax, metric, title in zip(

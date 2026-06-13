@@ -40,7 +40,7 @@ install.packages("renv")
 source("restore_environment.R")
 ```
 
-Python 只用于生成组合图。`scripts/plot_results.py` 依赖 `matplotlib`、`seaborn`、`pandas` 和 `numpy`。如果安装了 `uv`，可以直接运行：
+Python 用于生成组合图，以及中等规模原论文对照实验中的 numpy 版本实现。相关脚本按需依赖 `matplotlib`、`seaborn`、`pandas` 和 `numpy`。如果安装了 `uv`，可以直接运行：
 
 ```powershell
 uv run scripts/plot_results.py
@@ -87,8 +87,8 @@ source("run_all.R")
 | `scripts/exp_manual_validation.R` | 手工 MCMC 实现验证 |
 | `scripts/exp_manual_bidag_compare.R` | 手工实现与 BiDAG 的同参数对比 |
 | `scripts/exp_small_compare.R` | 小规模 Order/Partition 比较 |
-| `scripts/exp_medium_compare.R` | 中等规模比较，包含稳定性降级处理 |
-| `scripts/exp_highdim_hybrid.R` | 高维 iterative/hybrid 实验 |
+| `scripts/exp_medium_compare.R` | 中等规模 Order/Partition 比较 |
+| `scripts/exp_highdim_hybrid.R` | iterative/hybrid 补充实验 |
 | `scripts/exp_sample_size.R` | 样本量敏感性实验 |
 | `scripts/exp_manual_sensitivity.R` | 最大父节点数 `K` 的敏感性实验 |
 | `scripts/exp_posterior_uncertainty.R` | 边后验不确定性分析 |

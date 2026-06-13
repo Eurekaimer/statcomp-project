@@ -1,5 +1,5 @@
 """
-Step 3: Merge C results + R results → final metrics CSV + summary + tables.
+Step 3: Merge Python results + R results into final metrics and summary CSVs.
 """
 import csv, os, sys
 from collections import defaultdict
@@ -9,35 +9,37 @@ PROJECT = os.path.dirname(os.path.dirname(BASE))
 RESULTS = os.path.join(PROJECT, "results", "medium_original_reproduction")
 TABLES  = os.path.join(RESULTS, "tables")
 
-c_csv      = os.path.join(TABLES, "c_results.csv")
+python_csv = os.path.join(TABLES, "python_results.csv")
 r_csv      = os.path.join(TABLES, "r_results.csv")
 hybrid_csv = os.path.join(TABLES, "hybrid_results.csv")
 out_csv    = os.path.join(TABLES, "medium_original_metrics.csv")
 sum_csv    = os.path.join(TABLES, "medium_original_summary.csv")
 
 all_rows = []
+FIELDS = ["paper","experiment_group","data_source","p","n","seed",
+          "method","implementation","runtime","SHD","TPR","FPR",
+          "Precision","F1","acceptance_rate","mean_edge_entropy",
+          "posterior_gap","status","error","comparable_level",
+          "original_paper_trend","comment"]
 
 # Load Python results
-if os.path.exists(c_csv):
-    with open(c_csv, newline="") as f:
-        all_rows.extend(list(csv.DictReader(f)))
-    print(f"Loaded {sum(1 for _ in open(c_csv))-1} Python rows")
+if os.path.exists(python_csv):
+    with open(python_csv, newline="", encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            row = dict(row)
+            all_rows.append({k: row.get(k, "") for k in FIELDS})
+    print(f"Loaded {sum(1 for _ in open(python_csv))-1} Python rows")
 else:
-    print(f"WARNING: {c_csv} not found")
+    print(f"WARNING: {python_csv} not found")
 
 # Load R results
 if os.path.exists(r_csv):
-    with open(r_csv, newline="") as f:
+    with open(r_csv, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             # Normalize fields to match
             nr = dict(row)
             # R may write extra columns, keep only needed ones
-            keep = ["paper","experiment_group","data_source","p","n","seed",
-                    "method","implementation","runtime","SHD","TPR","FPR",
-                    "Precision","F1","acceptance_rate","mean_edge_entropy",
-                    "posterior_gap","status","error","comparable_level",
-                    "original_paper_trend","comment"]
-            clean = {k: nr.get(k, "") for k in keep}
+            clean = {k: nr.get(k, "") for k in FIELDS}
             all_rows.append(clean)
     print(f"Loaded {sum(1 for _ in open(r_csv))-1} R rows")
 else:
@@ -45,25 +47,20 @@ else:
 
 # Load hybrid results
 if os.path.exists(hybrid_csv):
-    with open(hybrid_csv, newline="") as f:
+    with open(hybrid_csv, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             nr = dict(row)
-            keep = ["paper","experiment_group","data_source","p","n","seed",
-                    "method","implementation","runtime","SHD","TPR","FPR",
-                    "Precision","F1","acceptance_rate","mean_edge_entropy",
-                    "posterior_gap","status","error","comparable_level",
-                    "original_paper_trend","comment"]
-            clean = {k: nr.get(k, "") for k in keep}
+            clean = {k: nr.get(k, "") for k in FIELDS}
             all_rows.append(clean)
     print(f"Loaded {sum(1 for _ in open(hybrid_csv))-1} hybrid rows")
 
 if not all_rows:
-    print("No data. Run run_c_and_save_data.py first, then R, then this.")
+    print("No data. Run run_python_and_save_data.py first, then R, then this.")
     sys.exit(1)
 
 # Write merged metrics
 with open(out_csv, "w", newline="") as f:
-    w = csv.DictWriter(f, fieldnames=all_rows[0].keys())
+    w = csv.DictWriter(f, fieldnames=FIELDS)
     w.writeheader()
     w.writerows(all_rows)
 print(f"Merged: {len(all_rows)} rows → {out_csv}")
@@ -83,7 +80,7 @@ for key in sorted(groups.keys()):
     if p != current_p:
         print(f"\n--- p={p} ---")
         current_p = p
-    for impl in ["C", "BiDAG", "manual_R"]:
+    for impl in ["Python", "BiDAG", "manual_R"]:
         vals = [v for v in groups[key] if v[3] == impl]
         if vals:
             shd = sum(v[0] for v in vals)/len(vals)

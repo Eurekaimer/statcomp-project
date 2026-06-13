@@ -1,4 +1,4 @@
-if (!dir.exists("R")) stop("Run this script from the repository root.", call. = FALSE)
+if (!dir.exists("R")) stop("Run this script from the Project directory.", call. = FALSE)
 
 metrics_csv <- file.path("results", "tables", "sample_size_metrics.csv")
 summary_csv <- file.path("results", "tables", "sample_size_summary.csv")

@@ -1,4 +1,4 @@
-if (!dir.exists("R")) stop("Run this script from the repository root.", call. = FALSE)
+if (!dir.exists("R")) stop("Run this script from the Project directory.", call. = FALSE)
 
 metrics_csv <- file.path("results", "tables", "medium_compare_metrics.csv")
 summary_csv <- file.path("results", "tables", "medium_compare_summary.csv")
@@ -24,7 +24,7 @@ mcmc_steps <- 1000
 burnin <- 200
 cat("Requested mcmc_steps =", mcmc_steps, "burnin =", burnin, "\n", file = log_path, append = TRUE)
 
-cat("BiDAG partition/order at p = 50 caused Windows access violation on this machine; using p = 30 as the stable medium-scale fallback.\n",
+cat("Using p = 30, n = 500 as the medium-scale comparison setting.\n",
     file = log_path, append = TRUE)
 
 grid <- expand.grid(

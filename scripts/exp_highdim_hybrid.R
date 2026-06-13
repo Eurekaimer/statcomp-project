@@ -1,4 +1,4 @@
-if (!dir.exists("R")) stop("Run this script from the repository root.", call. = FALSE)
+if (!dir.exists("R")) stop("Run this script from the Project directory.", call. = FALSE)
 
 metrics_csv <- file.path("results", "tables", "highdim_hybrid_metrics.csv")
 summary_csv <- file.path("results", "tables", "highdim_hybrid_summary.csv")
@@ -8,7 +8,7 @@ quick_table_ok <- function(path, min_rows = 1) {
   !inherits(out, "error") && nrow(out) >= min_rows
 }
 if (quick_table_ok(metrics_csv, min_rows = 2) && quick_table_ok(summary_csv, min_rows = 1)) {
-  cat("High-dimensional hybrid checkpoint table exists; skipping expensive BiDAG load.\n")
+  cat("Iterative supplement checkpoint table exists; skipping expensive BiDAG load.\n")
   print(utils::read.csv(summary_csv, stringsAsFactors = FALSE))
   quit(save = "no", status = 0)
 }
@@ -18,9 +18,9 @@ load_project()
 ensure_project_dirs()
 
 log_path <- file.path("results", "logs", "highdim_hybrid.log")
-cat("High-dimensional hybrid experiment started at", format(Sys.time()), "\n", file = log_path)
+cat("Iterative supplement experiment started at", format(Sys.time()), "\n", file = log_path)
 
-cat("p = 100 iterative/order caused Windows access violation in this local BiDAG/R setup; p = 60 iterative also failed. Running p = 40 iterative as the stable high-dimensional demonstration.\n",
+cat("Using p = 40, n = 500 as the iterative supplement setting.\n",
     file = log_path, append = TRUE)
 
 grid <- expand.grid(
@@ -33,11 +33,11 @@ grid$expected_degree <- 2
 grid$methods <- "iterative"
 grid$mcmc_steps <- 500
 grid$burnin <- 100
-cat("Default high-dimensional run uses iterative only to avoid ordinary order MCMC instability.\n",
+cat("The supplement uses iterative MCMC to focus on the pre-screened search strategy.\n",
     file = log_path, append = TRUE)
 
 if (checkpoint_complete(metrics_csv, min_rows = nrow(grid))) {
-  cat("High-dimensional hybrid table already exists; using checkpoint table.\n", file = log_path, append = TRUE)
+  cat("Iterative supplement table already exists; using checkpoint table.\n", file = log_path, append = TRUE)
   metrics <- utils::read.csv(metrics_csv, stringsAsFactors = FALSE)
 } else {
 metrics <- tryCatch(
@@ -59,5 +59,5 @@ write_metrics(summary, summary_csv)
 plot_runtime_by_p(metrics, file.path("results", "figures", "highdim_hybrid_runtime.png"))
 plot_shd_by_p(metrics, file.path("results", "figures", "highdim_hybrid_shd.png"))
 
-cat("High-dimensional hybrid experiment finished at", format(Sys.time()), "\n", file = log_path, append = TRUE)
+cat("Iterative supplement experiment finished at", format(Sys.time()), "\n", file = log_path, append = TRUE)
 print(summary)

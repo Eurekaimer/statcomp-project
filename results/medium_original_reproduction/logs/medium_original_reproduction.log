@@ -1,0 +1,28 @@
+2026-06-14 00:23:57 | === Medium original reproduction started === 
+2026-06-14 00:23:57 | Experiment A: Order MCMC medium-scale 
+2026-06-14 00:23:57 | start order_mcmc p=9 n=100 seed=1 
+2026-06-14 00:23:57 |   BiDAG order p=9 n=100 seed=1 
+2026-06-14 00:24:31 | === Medium original reproduction started === 
+2026-06-14 00:24:31 | Experiment A: Order MCMC medium-scale 
+2026-06-14 00:24:31 | start order_mcmc p=9 n=100 seed=1 
+2026-06-14 00:24:31 |   BiDAG order p=9 n=100 seed=1 
+2026-06-14 00:24:32 |   BiDAG partition p=9 n=100 seed=1 
+2026-06-14 00:24:35 |   manual manual_order p=9 n=100 seed=1 
+2026-06-14 00:24:40 |   manual manual_structure p=9 n=100 seed=1 
+2026-06-14 00:24:40 | finish order_mcmc p=9 n=100 seed=1 
+2026-06-14 00:24:40 | start order_mcmc p=37 n=100 seed=1 
+2026-06-14 00:24:40 |   BiDAG order p=37 n=100 seed=1 
+2026-06-14 00:24:42 |   BiDAG partition p=37 n=100 seed=1 
+2026-06-14 00:24:55 |   manual manual_order p=37 n=100 seed=1 
+2026-06-14 00:28:49 | === Medium original reproduction started === 
+2026-06-14 00:28:49 | Experiment A: Order MCMC medium-scale 
+2026-06-14 00:28:49 | start order_mcmc p=9 n=100 seed=1 
+2026-06-14 00:28:49 |   BiDAG order p=9 n=100 seed=1 
+2026-06-14 00:28:51 |   BiDAG partition p=9 n=100 seed=1 
+2026-06-14 00:28:55 |   manual manual_order p=9 n=100 seed=1 
+2026-06-14 00:29:00 |   manual manual_structure p=9 n=100 seed=1 
+2026-06-14 00:29:00 | finish order_mcmc p=9 n=100 seed=1 
+2026-06-14 00:29:00 | start order_mcmc p=37 n=100 seed=1 
+2026-06-14 00:29:00 |   BiDAG order p=37 n=100 seed=1 
+2026-06-14 00:29:01 |   BiDAG partition p=37 n=100 seed=1 
+2026-06-14 00:29:10 |   manual manual_order p=37 n=100 seed=1 

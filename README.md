@@ -42,7 +42,7 @@ install.packages("renv")
 source("restore_environment.R")
 ```
 
-The Python plotting script requires `matplotlib`, `seaborn`, `pandas` and `numpy`. If `uv` is available, use `uv run scripts/plot_results.py`; otherwise install these packages in the active Python environment and run the script with `python`.
+Python is used for combined plotting and the medium-scale original-paper reproduction workflow. The plotting and reproduction scripts require `matplotlib`, `seaborn`, `pandas` and `numpy` where applicable. If `uv` is available, use `uv run scripts/plot_results.py`; otherwise install these packages in the active Python environment and run the scripts with `python`.
 
 ## Quick Check
 
@@ -79,8 +79,8 @@ source("run_all.R")
 | `scripts/exp_manual_validation.R` | Validation of manual MCMC implementations |
 | `scripts/exp_manual_bidag_compare.R` | Matched manual-vs-BiDAG comparison |
 | `scripts/exp_small_compare.R` | Small-scale Order/Partition comparison |
-| `scripts/exp_medium_compare.R` | Medium-scale comparison with fallback handling |
-| `scripts/exp_highdim_hybrid.R` | High-dimensional iterative/hybrid demonstration |
+| `scripts/exp_medium_compare.R` | Medium-scale Order/Partition comparison |
+| `scripts/exp_highdim_hybrid.R` | Iterative/hybrid supplement |
 | `scripts/exp_sample_size.R` | Sample-size sensitivity experiment |
 | `scripts/exp_manual_sensitivity.R` | Sensitivity to the maximum parent-set size `K` |
 | `scripts/exp_posterior_uncertainty.R` | Edge posterior uncertainty summaries |
@@ -107,15 +107,15 @@ A three-way comparison experiment benchmarking Python implementation, R manual i
 **Step 1 — Python MCMC + shared data generation:**
 
 ```powershell
-python scripts/medium_original_reproduction/run_c_and_save_data.py
+python scripts/medium_original_reproduction/run_python_and_save_data.py
 ```
 
-Generates simulated data (`data/simulated/p{n}_n{n}_seed{n}_*.csv`) and runs Python-native Order and Structure MCMC (BIC score, numpy). Results written to `results/medium_original_reproduction/tables/c_results.csv`.
+Generates simulated data (`data/simulated/p{p}_n{n}_seed{seed}_*.csv`) and runs Python-native Order and Structure MCMC (BIC score, numpy). Results are written to `results/medium_original_reproduction/tables/python_results.csv`.
 
 **Step 2 — BiDAG + R manual (run from RStudio with renv activated):**
 
 ```r
-setwd("C:/Users/HuangZg/OneDrive/Desktop/SC-project-r/Project")
+setwd("<path-to-repository>")
 source("renv/activate.R")
 source("scripts/medium_original_reproduction/run_r_biag_manual.R")
 ```
@@ -130,10 +130,10 @@ python scripts/medium_original_reproduction/build_report_assets.py
 ```
 
 Produces:
-- `results/medium_original_reproduction/tables/medium_original_metrics.csv` (132 MCMC runs)
+- `results/medium_original_reproduction/tables/medium_original_metrics.csv` (134 MCMC runs)
 - `results/medium_original_reproduction/tables/medium_original_summary.csv`
-- `report/tables/medium_original_reproduction/*.tex`
-- `report/figures/medium_original_reproduction/*.png`
+- `report/tables/medium_original_reproduction/*.tex` when report assets are generated locally
+- `report/figures/medium_original_reproduction/*.png` when report assets are generated locally
 
 ### Experiment Grid
 
@@ -151,7 +151,7 @@ Produces:
 - BiDAG achieves best SHD/F1 at all scales; at p=5 BiDAG partition achieves SHD=0 (perfect recovery).
 - Order MCMC consistently outperforms Structure MCMC; the gap widens from +3 SHD at p=5 to +52 SHD at p=37, reproducing Friedman & Koller (2003).
 - BiDAG partition MCMC at p=20 (SHD=5.0) significantly outperforms BiDAG order (SHD=10.2), supporting Kuipers & Moffa (2017).
-- BiDAG iterative MCMC at p=40 (SHD=15.0, F1=0.782) confirms feasibility of search-space reduction, matching Kuipers, Suter & Moffa (2022).
+- BiDAG iterative MCMC at p=40 (SHD=15.0, F1=0.782) provides a supplementary reference for search-space reduction, consistent with Kuipers, Suter & Moffa (2022).
 - Python implementation is ~50× faster than R manual at p=37 while maintaining identical accuracy (both BIC).
 - All 134 MCMC runs completed successfully with zero failures.
 
