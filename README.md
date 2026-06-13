@@ -1,5 +1,7 @@
 # Bayesian Network MCMC Experiments
 
+[中文说明](./README.zh-CN.md)
+
 [![R](https://img.shields.io/badge/R-4.5.1-276DC3?logo=r&logoColor=white)](https://www.r-project.org/)
 [![renv](https://img.shields.io/badge/renv-locked%20environment-75AADB)](https://rstudio.github.io/renv/)
 [![BiDAG](https://img.shields.io/badge/BiDAG-reference%20implementation-4B5563)](https://github.com/cran/BiDAG)
