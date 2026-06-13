@@ -1,0 +1,15 @@
+"method","runtime","status","error","SHD","TPR","FPR","precision","recall","F1","implementation","score","max_parents","K","p","n","expected_degree","seed","mcmc_steps","burnin"
+"manual_order",3.31,"success",NA,3,0.75,0.0416666666666667,0.75,0.75,0.75,"manual","Gaussian BIC",2,"2",8,120,2,1,1500,300
+"manual_partition",3.41,"success",NA,3,0.75,0.0416666666666667,0.75,0.75,0.75,"manual","Gaussian BIC",2,"2",8,120,2,1,1500,300
+"manual_order",5.14,"success",NA,0,1,0,1,1,1,"manual","Gaussian BIC",3,"3",8,120,2,1,1500,300
+"manual_partition",5.57,"success",NA,0,1,0,1,1,1,"manual","Gaussian BIC",3,"3",8,120,2,1,1500,300
+"manual_structure",0.690000000000001,"success",NA,7,0.5,0.104166666666667,0.444444444444444,0.5,0.470588235294118,"manual","Gaussian BIC",2,"2",8,120,2,1,1500,300
+"order",0.670000000000002,"success",NA,2,0.75,0.0416666666666667,0.75,0.75,0.75,"BiDAG","BGe",NA,"N/A",8,120,2,1,1500,300
+"partition",2.94,"success",NA,1,0.875,0.0208333333333333,0.875,0.875,0.875,"BiDAG","BGe",NA,"N/A",8,120,2,1,1500,300
+"manual_order",2.99,"success",NA,6,0.6,0.0869565217391304,0.6,0.6,0.6,"manual","Gaussian BIC",2,"2",8,120,2,2,1500,300
+"manual_partition",3.31,"success",NA,8,0.4,0.130434782608696,0.4,0.4,0.4,"manual","Gaussian BIC",2,"2",8,120,2,2,1500,300
+"manual_order",5.25,"success",NA,4,0.7,0.0652173913043478,0.7,0.7,0.7,"manual","Gaussian BIC",3,"3",8,120,2,2,1500,300
+"manual_partition",5.75,"success",NA,4,0.7,0.0652173913043478,0.7,0.7,0.7,"manual","Gaussian BIC",3,"3",8,120,2,2,1500,300
+"manual_structure",0.670000000000002,"success",NA,9,0.5,0.152173913043478,0.416666666666667,0.5,0.454545454545455,"manual","Gaussian BIC",2,"2",8,120,2,2,1500,300
+"order",0.630000000000003,"success",NA,3,0.7,0.0434782608695652,0.777777777777778,0.7,0.736842105263158,"BiDAG","BGe",NA,"N/A",8,120,2,2,1500,300
+"partition",2.81,"success",NA,2,0.8,0.0217391304347826,0.888888888888889,0.8,0.842105263157895,"BiDAG","BGe",NA,"N/A",8,120,2,2,1500,300

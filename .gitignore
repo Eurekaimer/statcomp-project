@@ -1,0 +1,22 @@
+# R / RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# renv: keep lockfile and activation files, do not commit local package library
+renv/library/
+renv/staging/
+renv/python/
+renv/sandbox/
+
+# Reports are kept in the course-submission directory, not this code repository
+report/
+
+# Optional local bundles can be very large
+dist/
+
+# Temporary files
+*.tmp
+*_stdout.tmp
+*_stderr.tmp
