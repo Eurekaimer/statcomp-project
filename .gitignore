@@ -10,8 +10,7 @@ renv/staging/
 renv/python/
 renv/sandbox/
 
-# Reports are kept in the course-submission directory, not this code repository
-report/
+# Reports are included in this repository
 
 # Optional local bundles can be very large
 dist/

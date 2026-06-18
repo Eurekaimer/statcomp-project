@@ -1,7 +1,4 @@
-"""
-Step 1: Run pure Python/numpy MCMC methods and save shared data for R.
-Output: results/medium_original_reproduction/tables/python_results.csv
-"""
+# Run Python methods and save data.
 import csv, os, sys, numpy as np
 from run_experiment import (
     RNG, generate_data, run_order_mcmc, run_structure_mcmc,
@@ -16,7 +13,6 @@ os.makedirs(os.path.join(RESULTS, "tables"), exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 
 CASES = [
-    # (p, n, seed, exp_group, paper, data_source)
     (9, 500, 1, "order_mcmc", "Friedman and Koller (2003)", "simulated_flare_like"),
     (9, 500, 2, "order_mcmc", "Friedman and Koller (2003)", "simulated_flare_like"),
     (9, 1000, 1, "order_mcmc", "Friedman and Koller (2003)", "simulated_flare_like"),
@@ -45,7 +41,6 @@ rows = []
 for idx, (p, n, seed, exp_group, paper, ds) in enumerate(CASES):
     print(f"[{idx+1}/{len(CASES)}] {exp_group} p={p} n={n} seed={seed}", end="", flush=True)
 
-    # Generate + save data (shared with R)
     rng = RNG(seed + 10000)
     true_adj, data_arr = generate_data(p, n, rng)
     prefix = os.path.join(DATA_DIR, f"p{p}_n{n}_seed{seed}")
@@ -81,5 +76,3 @@ with open(csv_path, "w", newline="") as f:
     w.writerows(rows)
 print(f"\nDone. {len(rows)} Python rows → {csv_path}")
 print(f"Data saved to {DATA_DIR}/")
-print("\nNext: open RStudio, setwd to Project, then:")
-print("  source('scripts/medium_original_reproduction/run_r_biag_manual.R')")

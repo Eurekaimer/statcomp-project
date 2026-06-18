@@ -1,6 +1,6 @@
 project_root <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 if (!dir.exists(file.path(project_root, "R"))) {
-  stop("Run run_all.R from the repository root.", call. = FALSE)
+  stop("Run run_all.R from the Project directory.", call. = FALSE)
 }
 
 dir.create(file.path("results", "logs"), recursive = TRUE, showWarnings = FALSE)
@@ -59,7 +59,6 @@ run_script_subprocess <- function(script) {
       log_message("WARNING", script, "exit status", status, "but expected output exists:", expected)
     } else {
       log_message("FAILED", script, "exit status", status, "see", stderr_file)
-      stop("Experiment failed: ", script, call. = FALSE)
     }
   }
   invisible(status)

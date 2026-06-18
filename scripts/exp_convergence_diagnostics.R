@@ -1,5 +1,3 @@
-# Convergence diagnostics experiment
-# Compares multiple independent chains for convergence assessment
 if (!dir.exists("R")) stop("Run this script from the Project directory.", call. = FALSE)
 
 source("R/load_project.R")
@@ -13,9 +11,7 @@ summary_csv <- file.path("results", "tables", paste0(experiment, "_summary.csv")
 
 cat("Convergence diagnostics experiment started at", format(Sys.time()), "\n", file = log_path)
 
-# Edge-level between-chain variance
 edge_between_chain_variance <- function(edge_post_list) {
-  # edge_post_list: list of p x p matrices from different chains
   arr <- array(unlist(edge_post_list), dim = c(dim(edge_post_list[[1]]), length(edge_post_list)))
   mean_mat <- apply(arr, c(1, 2), mean)
   L <- length(edge_post_list)
@@ -27,7 +23,6 @@ edge_between_chain_variance <- function(edge_post_list) {
   var_mat / (L - 1)
 }
 
-# Run multiple chains with different starting seeds
 rows <- list()
 idx <- 1L
 
@@ -38,7 +33,6 @@ for (seed in 1:2) {
     file.path("data", "simulated", sprintf("conv_diag_p10_n200_seed%s", seed))
   )
 
-  # Run 3 independent chains for manual_order
   chain_results <- list()
   for (chain_id in 1:3) {
     chain_seed <- seed * 100 + chain_id
@@ -53,17 +47,14 @@ for (seed in 1:2) {
     chain_results[[chain_id]] <- result$edge_post
   }
 
-  # Compute between-chain variance
   bc_var <- edge_between_chain_variance(chain_results)
   diag_mask <- row(bc_var) != col(bc_var)
   var_vec <- as.vector(bc_var[diag_mask])
 
-  # Compute mean edge posterior across chains
   mean_post <- Reduce(`+`, chain_results) / length(chain_results)
   mean_post_vec <- as.vector(mean_post[diag_mask])
   true_vec <- as.vector(case$adj[diag_mask] != 0)
 
-  # Convergence metrics
   rows[[idx]] <- data.frame(
     seed = seed,
     p = 10,
@@ -76,14 +67,12 @@ for (seed in 1:2) {
     total_edges = length(var_vec),
     mean_posterior_sd = mean(sqrt(var_vec), na.rm = TRUE),
     max_posterior_sd = max(sqrt(var_vec), na.rm = TRUE),
-    # Posterior calibration: how well does mean post separate true from false edges?
     true_edge_mean_post = if (any(true_vec)) mean(mean_post_vec[true_vec], na.rm = TRUE) else NA_real_,
     false_edge_mean_post = if (any(!true_vec)) mean(mean_post_vec[!true_vec], na.rm = TRUE) else NA_real_,
     stringsAsFactors = FALSE
   )
   idx <- idx + 1L
 
-  # Also run manual_partition for comparison
   chain_results_part <- list()
   for (chain_id in 1:3) {
     chain_seed <- seed * 100 + chain_id
@@ -133,7 +122,6 @@ summary <- stats::aggregate(
 )
 write_metrics(summary, summary_csv)
 
-# Plot: between-chain variance comparison
 colors <- method_colors(unique(metrics$method))
 
 p_bc <- ggplot2::ggplot(

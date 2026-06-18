@@ -1,6 +1,4 @@
-"""
-Generate polished LaTeX tables + figures for report.
-"""
+# Make report tables and figures.
 import csv, os, sys, math
 from collections import defaultdict
 
@@ -30,7 +28,6 @@ def fmt(v, d=2):
         return f"{x:.{d}f}"
     except: return "---"
 
-# Aggregate by averaging over n within each (p, method, implementation) for compact display
 agg = defaultdict(list)
 for r in rows:
     if r.get("status") != "success": continue
@@ -52,9 +49,6 @@ for (eg, p, method, impl), vals in sorted(agg.items()):
             nums[f"{col}_sd"] = (sum((x-sum(vs)/len(vs))**2 for x in vs)/(len(vs)-1))**0.5 if len(vs)>1 else 0
     agg_rows.append({**d, **nums})
 
-# =====================================================================
-# TABLE A: Order MCMC experiment (p=9, 37) — compact
-# =====================================================================
 exp_name = {"order_mcmc": "Order MCMC (F\\&K 2003)", "partition_mcmc": "Partition MCMC (K\\&M 2017)",
             "hybrid_iterative": "Hybrid/Iter (KSM 2022)"}
 impl_short = {"Python": "Py", "BiDAG": "BD", "manual_R": "mR"}
@@ -88,9 +82,6 @@ with open(os.path.join(REPORT_TABLES, "medium_original_summary.tex"), "w", encod
     f.write(r"\end{table}" + "\n")
 print("Written: medium_original_summary.tex (compact)")
 
-# =====================================================================
-# TABLE B: Order vs Structure gap
-# =====================================================================
 with open(os.path.join(REPORT_TABLES, "order_vs_structure_gap.tex"), "w", encoding="utf-8") as f:
     f.write(r"\begin{table}[htbp]" + "\n")
     f.write(r"\centering" + "\n")
@@ -117,9 +108,6 @@ with open(os.path.join(REPORT_TABLES, "order_vs_structure_gap.tex"), "w", encodi
     f.write(r"\end{table}" + "\n")
 print("Written: order_vs_structure_gap.tex")
 
-# =====================================================================
-# TABLE C: Best method per dimension
-# =====================================================================
 with open(os.path.join(REPORT_TABLES, "implementation_comparison.tex"), "w", encoding="utf-8") as f:
     f.write(r"\begin{table}[htbp]" + "\n")
     f.write(r"\centering" + "\n")
@@ -143,9 +131,6 @@ with open(os.path.join(REPORT_TABLES, "implementation_comparison.tex"), "w", enc
     f.write(r"\end{table}" + "\n")
 print("Written: implementation_comparison.tex")
 
-# =====================================================================
-# FIGURES — polished
-# =====================================================================
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -160,7 +145,6 @@ plt.rcParams.update({
     "xtick.color": "#444444", "ytick.color": "#444444",
 })
 
-# Okabe-Ito colorblind-friendly palette (subset)
 IMPL_COLORS = {"Python": "#D55E00", "BiDAG": "#0072B2", "manual_R": "#009E73"}
 METHOD_MARKERS = {"python_order": "o", "python_structure": "X", "order": "D", "partition": "s",
                   "manual_order": "o", "manual_structure": "X", "manual_partition": "v",
@@ -172,7 +156,6 @@ METHOD_ALPHA = {"python_order": 1.0, "python_structure": 0.55, "order": 1.0, "pa
 success = [r for r in rows if r["status"] == "success"]
 ps = sorted(set(int(r["p"]) for r in success))
 
-# ---- Figure 6: F1 vs p, faceted by experiment ----
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
 bg_color = "#F8F8F8"
 for axi, eg in enumerate(["order_mcmc", "partition_mcmc"]):
@@ -182,7 +165,6 @@ for axi, eg in enumerate(["order_mcmc", "partition_mcmc"]):
                  "partition_mcmc": "Partition MCMC (Kuipers & Moffa 2017)"}[eg]
     eg_ps = sorted(set(int(r["p"]) for r in success if r["experiment_group"] == eg))
 
-    # Draw faint reference bands
     for p in eg_ps:
         ax.axvline(x=p, color="#CCCCCC", linewidth=0.5, linestyle=":", zorder=0)
 
@@ -200,9 +182,7 @@ for axi, eg in enumerate(["order_mcmc", "partition_mcmc"]):
             marker = METHOD_MARKERS.get(method, "o")
             color = IMPL_COLORS[impl]
             alpha = METHOD_ALPHA.get(method, 0.85) * IMPL_ALPHA[impl]
-            # Connecting line
             ax.plot(x_means, y_means, "-", color=color, linewidth=1.3, alpha=alpha*0.7, zorder=2)
-            # Mean points
             ax.scatter(x_means, y_means, marker=marker, s=70, c=color, alpha=alpha,
                       edgecolors="white", linewidth=0.8, label=f"{method} ({impl})", zorder=4)
 
@@ -221,7 +201,6 @@ fig.savefig(os.path.join(REPORT_FIGS, "medium_f1_shd_compare.png"))
 plt.close()
 print("Generated: medium_f1_shd_compare.png")
 
-# ---- Figure 7: SHD vs runtime bubble chart ----
 fig, ax = plt.subplots(figsize=(9, 5.5))
 ax.set_facecolor("#F8F8F8")
 for impl in ["Python", "BiDAG", "manual_R"]:
@@ -233,7 +212,6 @@ for impl in ["Python", "BiDAG", "manual_R"]:
     sz = [d[2]*140+25 for d in impl_data]
     ax.scatter(xs, ys, s=sz, c=IMPL_COLORS[impl], alpha=0.55,
                edgecolors="white", linewidth=0.6, label=impl, zorder=4)
-    # Annotate outliers
     for d in impl_data:
         if d[1] > 10 or d[0] > 50:
             ax.annotate(f"p={d[3]}", (d[0], d[1]), fontsize=7, color="#555555",
@@ -251,7 +229,6 @@ fig.savefig(os.path.join(REPORT_FIGS, "medium_runtime_compare.png"))
 plt.close()
 print("Generated: medium_runtime_compare.png")
 
-# ---- SHD gap bar chart ----
 fig, ax = plt.subplots(figsize=(7.5, 4.5))
 ax.set_facecolor("#F8F8F8")
 ps_plot = [5, 9, 14, 20, 37]
@@ -265,7 +242,6 @@ for p in ps_plot:
         gaps.append(sum(s_s)/len(s_s) - sum(o_s)/len(o_s))
         f1_drops.append(sum(o_f)/len(o_f) - sum(s_f)/len(s_f))
 
-# Sequential warm-to-hot gradient
 bar_colors = ["#FDD49E", "#FDAE61", "#F46D43", "#D73027", "#A50026"]
 bars = ax.bar(range(len(ps_plot)), gaps, color=bar_colors[:len(gaps)],
               edgecolor="white", linewidth=0.8, width=0.6)
@@ -275,7 +251,6 @@ ax.set_ylabel("SHD Gap (Structure − Order)", fontweight="bold")
 ax.set_title("Order MCMC vs Structure MCMC: Accelerating Divergence", fontweight="bold", fontsize=13)
 ax.grid(axis="y", alpha=0.25, linestyle="--", linewidth=0.4)
 
-# F1 drop labels on bars
 for i, (gap, drop) in enumerate(zip(gaps, f1_drops)):
     ax.text(i, gap + max(gaps)*0.03, f"ΔF1\n={drop:.2f}",
             fontsize=8, ha="center", va="bottom", color="#444444", fontweight="bold")

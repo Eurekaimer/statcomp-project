@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""
-Post-process medium_original_reproduction experiment results.
-Generates LaTeX tables and copies figures to the report directory.
-
-Usage:
-    python scripts/medium_original_reproduction/build_assets.py
-Run from the Project/ directory.
-"""
+# Make tables and figures.
 import os, sys, csv, shutil, math
 
 PROJECT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -20,9 +13,6 @@ REPORT_FIGS    = "report/figures/medium_original_reproduction"
 os.makedirs(REPORT_TABLES, exist_ok=True)
 os.makedirs(REPORT_FIGS, exist_ok=True)
 
-# ---------------------------------------------------------------------------
-# 1. Load metrics CSV
-# ---------------------------------------------------------------------------
 metrics_csv = os.path.join(RESULTS_TABLES, "medium_original_metrics.csv")
 if not os.path.exists(metrics_csv):
     print(f"ERROR: {metrics_csv} not found. Run the R experiment script first.")
@@ -32,13 +22,10 @@ with open(metrics_csv, newline="", encoding="utf-8") as f:
     rows = list(csv.DictReader(f))
 print(f"Loaded {len(rows)} metric rows")
 
-# ---------------------------------------------------------------------------
-# 2. Build summary CSV if not exists
-# ---------------------------------------------------------------------------
 summary_csv = os.path.join(RESULTS_TABLES, "medium_original_summary.csv")
 
 def build_summary(rows):
-    """Aggregate successful runs into summary rows."""
+    # Summarize successful runs.
     from collections import defaultdict
     groups = defaultdict(list)
     for r in rows:
@@ -53,7 +40,6 @@ def build_summary(rows):
                 "acceptance_rate","mean_edge_entropy","posterior_gap"]
     for k, vals in groups.items():
         eg, ds, p, n, method, impl = k
-        # Count failed separately
         failed = sum(1 for r in rows
                      if r["experiment_group"] == eg and r["p"] == p and r["n"] == n
                      and r["method"] == method and r["implementation"] == impl
@@ -90,9 +76,6 @@ else:
         summary_rows = list(csv.DictReader(f))
     print(f"Loaded {len(summary_rows)} summary rows")
 
-# ---------------------------------------------------------------------------
-# 3. Generate LaTeX summary table
-# ---------------------------------------------------------------------------
 def escape_tex(s):
     if s is None: return ""
     s = str(s)
@@ -106,7 +89,6 @@ def format_val(v, digits=2):
     except (ValueError, TypeError):
         return str(v) if v and v != "NA" else "---"
 
-# Pick key columns for the LaTeX table
 key_cols = [
     ("experiment_group", "Experiment", 22),
     ("p", "p", 5),
@@ -129,7 +111,6 @@ with open(summary_tex, "w", encoding="utf-8") as f:
     f.write(r"\label{tab:medium_original_summary}" + "\n")
     f.write(r"\begin{tabular}{" + "c" * len(key_cols) + "}\n")
     f.write(r"\toprule" + "\n")
-    # header
     header = " & ".join(escape_tex(c[1]) for c in key_cols) + r" \\" + "\n"
     f.write(header)
     f.write(r"\midrule" + "\n")
@@ -158,9 +139,6 @@ with open(summary_tex, "w", encoding="utf-8") as f:
     f.write(r"\end{table}" + "\n")
 print(f"Written: {summary_tex}")
 
-# ---------------------------------------------------------------------------
-# 4. Generate trend comparison LaTeX table
-# ---------------------------------------------------------------------------
 trend_csv_path = os.path.join(RESULTS_TABLES, "original_trend_comparison.csv")
 trend_tex = os.path.join(REPORT_TABLES, "original_trend_comparison.tex")
 if os.path.exists(trend_csv_path):
@@ -184,7 +162,6 @@ if os.path.exists(trend_csv_path):
             trend = escape_tex(row.get("original_trend", ""))
             comp  = escape_tex(row.get("our_comparison", ""))
             level = escape_tex(row.get("comparable_level", ""))
-            # abbreviate level
             lvl_map = {
                 "scale_only": "scale-only",
                 "approximate": "approx.",
@@ -200,9 +177,6 @@ if os.path.exists(trend_csv_path):
 else:
     print(f"WARNING: {trend_csv_path} not found; skipping trend table")
 
-# ---------------------------------------------------------------------------
-# 5. Copy figures to report directory
-# ---------------------------------------------------------------------------
 for fname in os.listdir(RESULTS_FIGS):
     src = os.path.join(RESULTS_FIGS, fname)
     dst = os.path.join(REPORT_FIGS, fname)
@@ -212,4 +186,3 @@ for fname in os.listdir(RESULTS_FIGS):
 
 print("\nDone. Tables in", REPORT_TABLES)
 print("Figures in", REPORT_FIGS)
-print("\nNext: recompile Report.tex with xelatex")

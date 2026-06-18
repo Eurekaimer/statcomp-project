@@ -1,209 +1,190 @@
-# Bayesian Network MCMC Experiments
+# 贝叶斯网络结构学习中的 MCMC 方法
 
-[中文说明](./README.zh-CN.md)
+[English version](readme-en.md) | [中文版](README.md)
 
-[![R](https://img.shields.io/badge/R-4.5.1-276DC3?logo=r&logoColor=white)](https://www.r-project.org/)
-[![renv](https://img.shields.io/badge/renv-locked%20environment-75AADB)](https://rstudio.github.io/renv/)
-[![BiDAG](https://img.shields.io/badge/BiDAG-reference%20implementation-4B5563)](https://github.com/cran/BiDAG)
-[![Python](https://img.shields.io/badge/Python-plotting-3776AB?logo=python&logoColor=white)](./scripts/plot_results.py)
-[![Reproducible](https://img.shields.io/badge/environment-reproducible-brightgreen)](./renv.lock)
-[![Results](https://img.shields.io/badge/results-included-lightgrey)](./results/README.md)
+这是统计计算课程大作业的项目目录。最终报告在：
 
-This repository contains reproducible code for Bayesian network structure learning experiments based on Markov chain Monte Carlo methods. It includes readable manual implementations of Structure MCMC, Order MCMC and a simplified partition-state sampler, together with reference experiments built on the BiDAG R package.
+- `report/Report.pdf`
+- `report/Report.tex`
 
-The repository includes the source code, notebooks, simulated data and generated result files needed to inspect and reproduce the reported experiments. The LaTeX report and compiled PDF are kept outside this repository.
+代码主要比较 Structure MCMC、Order MCMC、Partition MCMC 和 hybrid/iterative MCMC。R 代码是主线，Python 主要用于部分对照实验和画图。
 
-## Repository Structure
+## 目录
 
 ```text
-.
-├── R/                    Core functions for simulation, MCMC, BiDAG wrappers and metrics
-├── scripts/              Experiment scripts and plotting entry points
-├── notebooks/            Interactive environment, reproduction and result-inspection notebooks
-├── data/                 Simulated data and optional benchmark-data location
-├── results/              Generated tables, figures, raw objects and logs
-├── renv/                 renv activation files
-├── renv.lock             Locked R package versions
-├── restore_environment.R Dependency restoration helper
-├── run_all.R             Main experiment runner
-└── README.md             Reproduction guide
+R/          核心函数
+scripts/    实验脚本和画图脚本
+data/       模拟数据
+results/    实验结果、表格和图片
+report/     报告、参考文献、报告用表格和图片
+notebooks/  可选 notebook
 ```
 
-The repository contains generated data and results so that the reported outputs can be inspected without rerunning every experiment. The scripts can still regenerate these files.
+## 环境
 
-## Environment
+所有命令默认在项目根目录运行。
 
-The experiments were developed with R 4.5.1. Package versions are recorded in `renv.lock`.
+```bash
+cd /path/to/Project
+```
 
-Restore the R environment from the repository root:
+需要：
+
+- R 4.5 左右
+- TeX Live 或 MiKTeX
+- Python 3.10+
+- `uv`
+
+R 包用 `renv.lock` 固定。第一次运行前先恢复环境：
 
 ```r
 install.packages("renv")
 source("restore_environment.R")
 ```
 
-Python is used for combined plotting and the medium-scale original-paper reproduction workflow. The plotting and reproduction scripts require `matplotlib`, `seaborn`, `pandas` and `numpy` where applicable. If `uv` is available, use `uv run scripts/plot_results.py`; otherwise install these packages in the active Python environment and run the scripts with `python`.
-
-## Quick Check
-
-Run a minimal end-to-end check before launching the full experiment suite:
+如果是自己重新整理环境，可以用：
 
 ```r
-source("restore_environment.R")
+install.packages("renv")
+source("sync_environment.R")
+```
+
+LaTeX 需要 `xelatex` 和 `bibtex`。如果是精简 TeX Live，需要有 `ctex`、`natbib`、`algorithm`、`algpseudocode`。NixOS 下对应包是 `algorithms` 和 `algorithmicx`。
+
+## 快速测试
+
+先跑一个小测试，确认环境没问题：
+
+```r
 source("R/load_project.R")
 load_project()
 source("scripts/smoke_test.R")
 ```
 
-Equivalent PowerShell command:
+## 复现实验
 
-```powershell
-Rscript -e "source('restore_environment.R'); source('R/load_project.R'); load_project(); source('scripts/smoke_test.R')"
-```
-
-The smoke test verifies data simulation, BiDAG execution, metric computation and output writing. Generated files are placed under `results/tables/`, `results/figures/`, `results/raw/` and `results/logs/`.
-
-## Running Experiments
-
-Run the main experimental pipeline from the repository root:
+主线实验直接运行：
 
 ```r
 source("run_all.R")
 ```
 
-`run_all.R` executes the following scripts:
+它会按顺序运行：
 
-| Script | Purpose |
-| --- | --- |
-| `scripts/smoke_test.R` | Minimal executable workflow |
-| `scripts/exp_manual_validation.R` | Validation of manual MCMC implementations |
-| `scripts/exp_manual_bidag_compare.R` | Matched manual-vs-BiDAG comparison |
-| `scripts/exp_small_compare.R` | Small-scale Order/Partition comparison |
-| `scripts/exp_medium_compare.R` | Medium-scale Order/Partition comparison |
-| `scripts/exp_highdim_hybrid.R` | Iterative/hybrid supplement |
-| `scripts/exp_sample_size.R` | Sample-size sensitivity experiment |
-| `scripts/exp_manual_sensitivity.R` | Sensitivity to the maximum parent-set size `K` |
-| `scripts/exp_posterior_uncertainty.R` | Edge posterior uncertainty summaries |
+```text
+scripts/smoke_test.R
+scripts/exp_manual_validation.R
+scripts/exp_manual_bidag_compare.R
+scripts/exp_small_compare.R
+scripts/exp_medium_compare.R
+scripts/exp_highdim_hybrid.R
+scripts/exp_sample_size.R
+scripts/exp_manual_sensitivity.R
+scripts/exp_posterior_uncertainty.R
+```
 
-Individual experiments can be run directly:
+也可以单独运行某个脚本，例如：
 
 ```r
 source("scripts/exp_manual_bidag_compare.R")
+source("scripts/exp_manual_sensitivity.R")
 ```
 
-Optional scripts are kept outside the main runner because they may require additional data or longer runtime:
+结果主要在：
 
-| Script | Purpose |
-| --- | --- |
-| `scripts/exp_convergence_diagnostics.R` | Prototype convergence diagnostics |
-| `scripts/exp_benchmark_optional.R` | Optional benchmark-network experiments |
-
-## Medium-Scale Original Paper Reproduction
-
-A three-way comparison experiment benchmarking Python implementation, R manual implementation, and BiDAG official package against original paper trends (Friedman & Koller 2003, Kuipers & Moffa 2017).
-
-### Three-Step Workflow
-
-**Step 1 — Python MCMC + shared data generation:**
-
-```powershell
-python scripts/medium_original_reproduction/run_python_and_save_data.py
+```text
+results/tables/
+results/figures/
+results/raw/
 ```
 
-Generates simulated data (`data/simulated/p{p}_n{n}_seed{seed}_*.csv`) and runs Python-native Order and Structure MCMC (BIC score, numpy). Results are written to `results/medium_original_reproduction/tables/python_results.csv`.
+## 中等规模对照实验
 
-**Step 2 — BiDAG + R manual (run from RStudio with renv activated):**
+这部分在：
+
+```text
+scripts/medium_original_reproduction/
+```
+
+先运行 Python 部分：
+
+```bash
+cd scripts/medium_original_reproduction
+uv sync
+uv run python run_python_and_save_data.py
+cd ../..
+```
+
+再运行 R 部分：
 
 ```r
-setwd("<path-to-repository>")
-source("renv/activate.R")
 source("scripts/medium_original_reproduction/run_r_biag_manual.R")
+source("scripts/medium_original_reproduction/run_r_hybrid.R")
 ```
 
-Runs BiDAG order/partition + manual order/structure/partition on the same data. Results written to `results/medium_original_reproduction/tables/r_results.csv`.
+最后合并结果：
 
-**Step 3 — Merge and build report assets:**
-
-```powershell
-python scripts/medium_original_reproduction/merge_all.py
-python scripts/medium_original_reproduction/build_report_assets.py
+```bash
+cd scripts/medium_original_reproduction
+uv run python merge_all.py
+uv run python build_report_assets.py
+cd ../..
 ```
 
-Produces:
-- `results/medium_original_reproduction/tables/medium_original_metrics.csv` (134 MCMC runs)
-- `results/medium_original_reproduction/tables/medium_original_summary.csv`
-- `report/tables/medium_original_reproduction/*.tex` when report assets are generated locally
-- `report/figures/medium_original_reproduction/*.png` when report assets are generated locally
+输出位置：
 
-### Experiment Grid
-
-| Experiment | Data Source | p | n | Methods |
-|---|---|---|---|---|
-| Order MCMC (F&K 2003) | simulated\_flare\_like | 9 | 500, 1000 | Python order/structure, BiDAG order/partition, R manual order/structure/partition |
-| Order MCMC (F&K 2003) | simulated\_alarm\_like | 37 | 500, 1000 | Python order/structure, BiDAG order, R manual order/structure |
-| Partition MCMC (K&M 2017) | simulated\_toy\_like | 5 | 200, 500 | all three implementations |
-| Partition MCMC (K&M 2017) | simulated\_boston\_like | 14 | 200, 500 | all three implementations |
-| Partition MCMC (K&M 2017) | simulated\_large\_like | 20 | 200, 500 | all three implementations |
-| Hybrid/Iterative (KSM 2022) | simulated\_p40 | 40 | 200 | BiDAG iterative only |
-
-### Key Results
-
-- BiDAG achieves best SHD/F1 at all scales; at p=5 BiDAG partition achieves SHD=0 (perfect recovery).
-- Order MCMC consistently outperforms Structure MCMC; the gap widens from +3 SHD at p=5 to +52 SHD at p=37, reproducing Friedman & Koller (2003).
-- BiDAG partition MCMC at p=20 (SHD=5.0) significantly outperforms BiDAG order (SHD=10.2), supporting Kuipers & Moffa (2017).
-- BiDAG iterative MCMC at p=40 (SHD=15.0, F1=0.782) provides a supplementary reference for search-space reduction, consistent with Kuipers, Suter & Moffa (2022).
-- Python implementation is ~50× faster than R manual at p=37 while maintaining identical accuracy (both BIC).
-- All 134 MCMC runs completed successfully with zero failures.
-
-### Why Three Implementations?
-
-The three-way comparison (Python + R manual + BiDAG) is intentional, not redundant:
-
-| Implementation | Scoring | Speed | Purpose |
-|---|---|---|---|
-| R manual | BIC | slow | Fully auditable mechanism reference |
-| Python (numpy) | BIC | fast (~50× vs R) | Same algorithm, vectorized; validates correctness |
-| BiDAG (R + C++) | BGe | fast | Production-grade reference; BGe > BIC in precision |
-
-Python and R manual use the same BIC scoring and produce nearly identical SHD/F1 — two independent codebases converging on the same numbers eliminates implementation bugs. BiDAG's superior precision is attributable to BGe marginal likelihood scoring and search-space pruning, not just faster code.
-
-## Plotting
-
-After CSV result files have been generated, produce combined figures with:
-
-```powershell
-uv run scripts/plot_results.py
+```text
+results/medium_original_reproduction/
+report/tables/medium_original_reproduction/
+report/figures/medium_original_reproduction/
 ```
 
-or:
+## 重新生成报告
 
-```powershell
-python scripts/plot_results.py
+先整理报告用表格和图片：
+
+```r
+source("scripts/build_report_assets.R")
 ```
 
-The plotting script reads `results/tables/*.csv` and writes figures to `results/figures/`.
+生成 Python 组合图：
 
-## Implementation Notes
+```bash
+uv run --script scripts/plot_results.py
+uv run --script scripts/plot_concepts.py
+```
 
-Manual samplers are implemented in `R/manual_mcmc.R`. They use Gaussian BIC scoring, explicit proposal generation, Metropolis-Hastings acceptance and edge posterior accumulation. The implementation prioritizes transparency: parent sets are enumerated, order and partition scores are recomputed through R-level logic, and sampled adjacency matrices are reconstructed for posterior summaries.
+编译报告：
 
-BiDAG-based experiments are wrapped in `R/bidag_runner.R`. They use BiDAG's BGe scoring and sampling interfaces for Order MCMC, Partition MCMC and iterative MCMC. The BiDAG source is available from the CRAN GitHub mirror: <https://github.com/cran/BiDAG>. Its package metadata describes data-driven search-space pruning based on a PC-algorithm skeleton followed by search-and-score refinement. The source also links against `Rcpp` and contains compiled C++ helper routines under `src/`.
+```r
+source("scripts/compile_latex_report.R")
+```
 
-For this reason, the manual samplers are expected to be slower than BiDAG. Their role is methodological inspection and controlled comparison, not optimized production inference.
+生成的 PDF 在：
 
-Common evaluation metrics are implemented in `R/metrics.R`, including SHD, TPR, FPR, precision, recall, F1 and runtime.
+```text
+report/Report.pdf
+```
 
-## Version-Control Scope
+也可以手动编译：
 
-Files intended for version control include source code, notebooks, simulated data, generated result tables and figures, raw RDS objects used by downstream summaries, dependency metadata and lightweight documentation.
+```bash
+cd report
+xelatex Report.tex
+bibtex Report
+xelatex Report.tex
+xelatex Report.tex
+```
 
-The following local or report-specific artifacts are excluded by `.gitignore`:
+## 已有结果
 
-- `report/`
-- `renv/library/`
-- `renv/staging/`
-- `renv/python/`
-- `renv/sandbox/`
-- `dist/`
+如果只是看结果，不需要重新跑实验，直接看：
 
-The local package library is intentionally not committed. It is platform- and R-version-specific, and can be restored from `renv.lock` with `source("restore_environment.R")`.
+```text
+report/Report.pdf
+results/tables/
+results/figures/
+results/RESULT_INDEX.md
+```
+
+完整实验会花比较久，尤其是中等规模和 high-dimensional/hybrid 部分。

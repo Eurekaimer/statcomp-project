@@ -1,11 +1,5 @@
-# Run this file from the repository root:
+# 同步项目 R 环境。
 # source("sync_environment.R")
-#
-# Purpose:
-# 1. Initialize renv for this project.
-# 2. Install all packages required by the project into the project library.
-# 3. Register the Jupyter R kernel.
-# 4. Write renv.lock so teammates can run renv::restore().
 
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
@@ -19,7 +13,7 @@ required_packages <- c(
 bioconductor_packages <- c("graph", "RBGL", "Rgraphviz")
 
 if (!file.exists("README.md") || !dir.exists("R") || !dir.exists("scripts")) {
-  stop("Please run this script from the repository root.", call. = FALSE)
+  stop("Please run this script from the Project directory.", call. = FALSE)
 }
 
 message("==> Checking renv")

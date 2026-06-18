@@ -291,7 +291,7 @@ propose_partition_state <- function(blocks) {
 manual_mcmc_result <- function(method, map_adj, edge_post, runtime, trace) {
   list(
     method = method,
-    fit = list(trace = trace, implementation = "manual_structure"),
+    fit = list(trace = trace, implementation = "manual_educational"),
     map_adj = map_adj,
     edge_post = edge_post,
     runtime = runtime,

@@ -1,16 +1,9 @@
-"""
-run_experiment.py — Pure Python + numpy Order/Structure MCMC
-for Bayesian network structure learning (medium original reproduction).
-
-No R, no gcc, no external dependencies beyond numpy.
-Run from: Project/scripts/medium_original_reproduction/
-"""
+# Order and Structure MCMC.
 
 import numpy as np
 import csv, os, sys, time, math
 from itertools import combinations
 
-# ---- RNG (simple xorshift) -----------------------------------------------
 class RNG:
     def __init__(self, seed):
         self.state = seed & 0xFFFFFFFF
@@ -30,7 +23,6 @@ class RNG:
     def choice_sign(self):
         return 1.0 if self.rand() < 0.5 else -1.0
 
-# ---- DAG utilities -------------------------------------------------------
 def is_dag(adj):
     p = len(adj)
     indeg = np.sum(adj, axis=0)
@@ -45,7 +37,6 @@ def is_dag(adj):
                     q.append(v)
     return len(q) == p
 
-# ---- Generate random DAG + data ------------------------------------------
 def generate_data(p, n, rng, expected_degree=2.0):
     rho = expected_degree / (p - 1.0)
     order = list(range(p))
@@ -73,7 +64,6 @@ def generate_data(p, n, rng, expected_degree=2.0):
             data[row, j] = signal + rng.randn()
     return true_adj, data
 
-# ---- BIC scoring ---------------------------------------------------------
 def local_bic(y, X_parents):
     n = len(y)
     if X_parents is None or X_parents.shape[1] == 0:
@@ -90,7 +80,7 @@ def local_bic(y, X_parents):
     return loglik - 0.5 * k * math.log(n)
 
 def best_score(data, j, allowed_mask, parent_sets_cache):
-    """Find best parent set from allowed_mask for variable j, using cache."""
+    # Pick best parent set.
     best = -1e20
     best_mask = 0
     for mask, score in parent_sets_cache[j]:
@@ -106,10 +96,8 @@ def precompute_scores(data, max_parents):
     cache = [[] for _ in range(p)]
     for j in range(p):
         candidates = [i for i in range(p) if i != j]
-        # empty set
         score = local_bic(data[:, j], None)
         cache[j].append((0, score))
-        # subsets up to max_parents
         for k in range(1, max_parents + 1):
             for comb in combinations(candidates, k):
                 mask = 0
@@ -120,7 +108,6 @@ def precompute_scores(data, max_parents):
                 cache[j].append((mask, score))
     return cache
 
-# ---- Order MCMC ----------------------------------------------------------
 def run_order_mcmc(data, mcmc_steps, burnin, max_parents, rng):
     p = data.shape[1]
     n = data.shape[0]
@@ -172,7 +159,6 @@ def run_order_mcmc(data, mcmc_steps, burnin, max_parents, rng):
                 allowed |= (1 << j)
             kept += 1
 
-    # MAP from best_order
     map_adj = np.zeros((p, p), dtype=np.int32)
     allowed = 0
     for pos, j in enumerate(best_order):
@@ -186,7 +172,6 @@ def run_order_mcmc(data, mcmc_steps, burnin, max_parents, rng):
     runtime = time.time() - t0
     return map_adj, edge_post, runtime, accepted / max(mcmc_steps, 1), best_sc
 
-# ---- Structure MCMC ------------------------------------------------------
 def run_structure_mcmc(data, mcmc_steps, burnin, max_parents, rng):
     p = data.shape[1]
     n = data.shape[0]
@@ -252,7 +237,6 @@ def run_structure_mcmc(data, mcmc_steps, burnin, max_parents, rng):
     runtime = time.time() - t0
     return map_adj, edge_post, runtime, accepted / max(mcmc_steps, 1), best_sc
 
-# ---- Metrics -------------------------------------------------------------
 def compute_metrics(true_adj, est_adj):
     p = true_adj.shape[0]
     tp = fp = tn = fn = 0
@@ -300,7 +284,6 @@ def posterior_gap(true_adj, edge_post):
         return float(np.mean(true_vals) - np.mean(false_vals))
     return 0.0
 
-# ---- Experiment definitions ----------------------------------------------
 EXPERIMENTS = {
     "order_mcmc": {
         "paper": "Friedman and Koller (2003)",
@@ -382,7 +365,6 @@ def main():
                 })
                 print(f"  {method}: {status} SHD={shd} F1={f1:.3f} {rt:.1f}s", flush=True)
 
-    # Write CSV
     with open(metrics_csv, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=rows[0].keys())
         w.writeheader()

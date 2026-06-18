@@ -3,7 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["matplotlib>=3.8", "numpy>=1.24"]
 # ///
-"""Generate clean concept diagrams for the report. No TikZ, just matplotlib."""
+# Draw concept figures.
 
 import matplotlib
 matplotlib.use("Agg")
@@ -16,7 +16,6 @@ PROJECT = Path(__file__).resolve().parent.parent
 FIGURES = PROJECT / "results" / "figures"
 FIGURES.mkdir(parents=True, exist_ok=True)
 
-# Use a Chinese-capable font available on Windows
 for name in ["Microsoft YaHei", "SimHei", "SimSun", "WenQuanYi Micro Hei", "Noto Sans CJK SC"]:
     for f in fm.fontManager.ttflist:
         if f.name == name:
@@ -38,7 +37,7 @@ def draw_arrow(ax, x1, y1, x2, y2, color="gray", lw=2):
 
 
 def fig1_structure_mcmc():
-    """Figure 1: Structure MCMC flow."""
+    # Structure MCMC.
     fig, ax = plt.subplots(figsize=(10, 1.2))
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 1.2)
@@ -70,7 +69,7 @@ def fig1_structure_mcmc():
 
 
 def fig2_state_spaces():
-    """Figure 2: Three state spaces progression."""
+    # State spaces.
     fig, ax = plt.subplots(figsize=(10, 1.5))
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 1.5)
@@ -100,7 +99,7 @@ def fig2_state_spaces():
 
 
 def fig3_hybrid_flow():
-    """Figure 3: Hybrid MCMC workflow."""
+    # Hybrid MCMC.
     fig, ax = plt.subplots(figsize=(10, 1.2))
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 1.2)
@@ -123,7 +122,6 @@ def fig3_hybrid_flow():
         x2 = boxes[i + 1][0]
         draw_arrow(ax, x1, 0.625, x2, 0.625)
 
-    # Return arrow from convergence check back to constrained MCMC
     ax.annotate("未收敛，扩展候选集", xy=(3.45, 1.0), xytext=(5.95, 1.0),
                 fontsize=8, color="#888", ha="center", va="center",
                 arrowprops=dict(arrowstyle="->", color="#AAA", lw=1.2,

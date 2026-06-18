@@ -1,13 +1,17 @@
-# results
+# 实验结果目录
 
-This directory stores generated experiment outputs used for result inspection and figure generation.
+本目录保存实验脚本生成的结果文件。报告中的数值和图像均以这些输出为依据。
 
-## Subdirectories
+子目录说明：
 
-- `tables/`: metric CSV files and summary CSV files.
-- `figures/`: generated plots.
-- `raw/`: raw RDS objects for individual experiment cases.
-- `logs/`: runtime logs and failure records.
-- `checkpoints/`: resumable experiment caches.
+- `tables/`：CSV 指标表和汇总表。
+- `figures/`：实验图像。
+- `raw/`：每个实验 case 的 RDS 原始结果。
+- `logs/`：运行日志、降级原因和错误信息。
+- `checkpoints/`：case 级缓存，用于中断后继续运行。
 
-Experiment scripts reuse complete result tables when available. The main result index is stored in `results/RESULT_INDEX.md`.
+实验脚本会复用已经生成的完整结果表，以减少重复计算。当前主线结果清单见：
+
+```text
+results/RESULT_INDEX.md
+```

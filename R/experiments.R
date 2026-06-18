@@ -2,7 +2,8 @@ ensure_project_dirs <- function() {
   dirs <- c(
     "data/simulated", "data/benchmark",
     "results/raw", "results/tables", "results/figures", "results/logs",
-    "results/checkpoints"
+    "results/checkpoints",
+    "report"
   )
   for (d in dirs) dir.create(d, recursive = TRUE, showWarnings = FALSE)
 }

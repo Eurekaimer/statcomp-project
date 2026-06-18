@@ -1,13 +1,7 @@
-# Optional packaging script.
-# Run after source("sync_environment.R") succeeds.
-#
-# This creates a zip archive under dist/. It includes the project files and,
-# when possible, the project-local renv library. This is useful for teammates
-# who have unstable network access. The normal and recommended workflow is still
-# renv::restore() from renv.lock.
+# 打包项目文件和 R 环境。
 
 if (!file.exists("README.md") || !dir.exists("R") || !dir.exists("scripts")) {
-  stop("Please run this script from the repository root.", call. = FALSE)
+  stop("Please run this script from the Project directory.", call. = FALSE)
 }
 
 if (!requireNamespace("renv", quietly = TRUE)) {
@@ -43,4 +37,3 @@ on.exit(setwd(old_wd), add = TRUE)
 message("Creating bundle: ", zipfile)
 utils::zip(zipfile = zipfile, files = files)
 message("Bundle created: ", normalizePath(zipfile, winslash = "/", mustWork = FALSE))
-

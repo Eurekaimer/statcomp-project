@@ -8,13 +8,7 @@
 #     "numpy>=1.24",
 # ]
 # ///
-"""
-Generate publication-quality figures for Bayesian network MCMC comparison report.
-Reads CSV result tables and produces combined figures.
-
-Usage: uv run scripts/plot_results.py
-Output: results/figures/py_*.png
-"""
+# Draw result figures.
 
 import pandas as pd
 import numpy as np
@@ -30,7 +24,6 @@ TABLES = PROJECT / "results" / "tables"
 FIGURES = PROJECT / "results" / "figures"
 FIGURES.mkdir(parents=True, exist_ok=True)
 
-# === Style ===
 plt.rcParams.update({
     "figure.dpi": 200,
     "font.size": 11,
@@ -46,7 +39,6 @@ plt.rcParams.update({
     "axes.edgecolor": "#222222",
     "axes.linewidth": 0.8,
 })
-# Colorblind-friendly scientific palette based on Okabe-Ito colors.
 PALETTE = {
     "order": "#0072B2",
     "partition": "#D55E00",
@@ -96,12 +88,8 @@ def save(fig, name: str) -> None:
     print(f"  Saved: {path}")
 
 
-# ====================================================================
-# Figure 1: Small-scale comparison (p=10,20  n=200,500)
-# ====================================================================
 def plot_small_compare():
     df = load_csv("small_compare_metrics.csv")
-    # Aggregate over seeds
     g = df.groupby(["method", "p", "n"])[["SHD", "F1", "runtime"]].mean().reset_index()
     g["label"] = g.apply(lambda r: f"p={int(r.p)}, n={int(r.n)}", axis=1)
 
@@ -125,9 +113,6 @@ def plot_small_compare():
     save(fig, "small_compare_combined")
 
 
-# ====================================================================
-# Figure 2: Sample size effect (p=20, n=100,200,500,1000)
-# ====================================================================
 def plot_sample_size():
     df = load_csv("sample_size_metrics.csv")
     g = df.groupby(["method", "n"])[["SHD", "F1", "runtime"]].mean().reset_index()
@@ -154,9 +139,6 @@ def plot_sample_size():
     save(fig, "sample_size_combined")
 
 
-# ====================================================================
-# Figure 3: Manual MCMC sensitivity to max_parents
-# ====================================================================
 def plot_manual_sensitivity():
     df = load_csv("manual_sensitivity_metrics.csv")
     g = df.groupby(["method", "max_parents"])[["F1", "SHD", "runtime"]].mean().reset_index()
@@ -185,9 +167,6 @@ def plot_manual_sensitivity():
     save(fig, "manual_sensitivity_combined")
 
 
-# ====================================================================
-# Figure 4: Posterior uncertainty summary (entropy heatmap)
-# ====================================================================
 def plot_posterior_uncertainty():
     df = load_csv("posterior_uncertainty_metrics.csv")
     g = df.groupby(["method", "p", "n"])[["mean_entropy", "true_edge_mean_posterior",
@@ -195,7 +174,6 @@ def plot_posterior_uncertainty():
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
 
-    # Left: entropy by p
     ax = axes[0]
     for method in sorted(g["method"].unique()):
         sub = g[g["method"] == method]
@@ -212,7 +190,6 @@ def plot_posterior_uncertainty():
     ax.set_title("Structural Uncertainty by Dimension")
     ax.legend(frameon=True, fancybox=False, edgecolor="#333333")
 
-    # Right: posterior gap by n
     ax = axes[1]
     g["posterior_gap"] = g["true_edge_mean_posterior"] - g["false_edge_mean_posterior"]
     for method in sorted(g["method"].unique()):
@@ -236,13 +213,9 @@ def plot_posterior_uncertainty():
     save(fig, "posterior_uncertainty_combined")
 
 
-# ====================================================================
-# Figure 5: All-methods SHD comparison bar chart
-# ====================================================================
 def plot_all_methods_comparison():
     fig, ax = plt.subplots(figsize=(10, 4.5))
 
-    # Collect data from multiple sources
     sources = {
         "Small (10,200)": ("small_compare_metrics.csv", None),
         "Small (20,500)": ("small_compare_metrics.csv", None),
@@ -292,9 +265,6 @@ def plot_all_methods_comparison():
         save(fig, "all_methods_shd")
 
 
-# ====================================================================
-# Figure 6: Manual MCMC validation (3 methods comparison)
-# ====================================================================
 def plot_manual_validation():
     df = load_csv("manual_validation_metrics.csv")
     g = df.groupby("method")[["SHD", "F1", "runtime"]].mean().reset_index()
@@ -322,9 +292,6 @@ def plot_manual_validation():
     save(fig, "manual_validation_combined")
 
 
-# ====================================================================
-# Figure 7: Manual implementation versus BiDAG on small p
-# ====================================================================
 def plot_manual_bidag_comparison():
     g = load_csv("manual_bidag_compare_summary.csv").copy()
     g["K"] = g["K"].fillna("N/A").astype(str)
@@ -379,9 +346,6 @@ def plot_manual_bidag_comparison():
     save(fig, "manual_bidag_comparison")
 
 
-# ====================================================================
-# Main
-# ====================================================================
 if __name__ == "__main__":
     print("Generating Python-based figures...")
     try:

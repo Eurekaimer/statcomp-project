@@ -1,12 +1,3 @@
-# run_r_biag_manual.R
-# Run from RStudio with Project/ as working directory.
-# Reads pre-generated data from data/simulated/, runs BiDAG + manual methods,
-# writes results to results/medium_original_reproduction/tables/r_results.csv
-#
-# Usage (in RStudio Console):
-#   setwd("<path-to-project>/Project")
-#   source("scripts/medium_original_reproduction/run_r_biag_manual.R")
-
 suppressMessages({
   source("R/load_project.R")
   load_project()
@@ -18,14 +9,12 @@ MCMC_STEPS <- 800
 BURNIN     <- 150
 MAX_PARENTS <- 2
 
-# ---- Find all data files ----
 data_files <- list.files(DATA_DIR, pattern = "_data\\.csv$", full.names = TRUE)
 cat("Found", length(data_files), "data files\n")
 
 rows <- list()
 
 for (data_f in data_files) {
-  # Parse p, n, seed from filename: data/simulated/p9_n500_seed1_data.csv
   base <- sub("_data\\.csv$", "", basename(data_f))
   parts <- strsplit(base, "_")[[1]]
   p_str <- parts[1]; n_str <- parts[2]; seed_str <- parts[3]
@@ -36,13 +25,11 @@ for (data_f in data_files) {
 
   cat(sprintf("\n--- p=%d n=%d seed=%d ---\n", p, n, seed))
 
-  # Load data
   data <- as.data.frame(read.csv(data_f))
   adj_f <- paste0(prefix, "_adj.csv")
   true_adj <- as.matrix(read.csv(adj_f, header = FALSE))
   storage.mode(true_adj) <- "integer"
 
-  # Determine experiment group & paper
   if (p %in% c(9, 37)) {
     exp_group <- "order_mcmc"
     paper <- "Friedman and Koller (2003)"
@@ -55,7 +42,6 @@ for (data_f in data_files) {
     "5"="simulated_toy_like", "14"="simulated_boston_like",
     "20"="simulated_large_like", paste0("simulated_p", p))
 
-  # ---- Helper to run & record ----
   run_one <- function(method, impl) {
     cat(sprintf("  %-22s ...", paste0(impl, ":", method)))
     start <- proc.time()[["elapsed"]]
@@ -118,18 +104,15 @@ for (data_f in data_files) {
       original_paper_trend="", comment="", stringsAsFactors=FALSE)))
   }
 
-  # BiDAG methods
   run_one("order", "BiDAG")
   if (p <= 20) run_one("partition", "BiDAG")
 
-  # Manual methods (skip if p > 37)
   if (p <= 20) {
     run_one("manual_order", "manual_R")
     run_one("manual_structure", "manual_R")
     run_one("manual_partition", "manual_R")
   } else if (p <= 37) {
     run_one("manual_order", "manual_R")
-    # manual_structure at p=37: short timeout
     setTimeLimit(cpu=300, elapsed=300, transient=TRUE)
     tryCatch({
       run_one("manual_structure", "manual_R")
@@ -149,7 +132,6 @@ for (data_f in data_files) {
   }
 }
 
-# ---- Output ----
 out <- do.call(rbind, rows)
 rownames(out) <- NULL
 dir.create(dirname(OUT_CSV), recursive = TRUE, showWarnings = FALSE)

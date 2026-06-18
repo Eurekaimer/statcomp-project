@@ -1,6 +1,4 @@
-"""
-Step 3: Merge Python results + R results into final metrics and summary CSVs.
-"""
+# Merge metric tables.
 import csv, os, sys
 from collections import defaultdict
 
@@ -22,7 +20,6 @@ FIELDS = ["paper","experiment_group","data_source","p","n","seed",
           "posterior_gap","status","error","comparable_level",
           "original_paper_trend","comment"]
 
-# Load Python results
 if os.path.exists(python_csv):
     with open(python_csv, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
@@ -32,20 +29,16 @@ if os.path.exists(python_csv):
 else:
     print(f"WARNING: {python_csv} not found")
 
-# Load R results
 if os.path.exists(r_csv):
     with open(r_csv, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
-            # Normalize fields to match
             nr = dict(row)
-            # R may write extra columns, keep only needed ones
             clean = {k: nr.get(k, "") for k in FIELDS}
             all_rows.append(clean)
     print(f"Loaded {sum(1 for _ in open(r_csv))-1} R rows")
 else:
     print(f"WARNING: {r_csv} not found")
 
-# Load hybrid results
 if os.path.exists(hybrid_csv):
     with open(hybrid_csv, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
@@ -58,14 +51,12 @@ if not all_rows:
     print("No data. Run run_python_and_save_data.py first, then R, then this.")
     sys.exit(1)
 
-# Write merged metrics
 with open(out_csv, "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=FIELDS)
     w.writeheader()
     w.writerows(all_rows)
 print(f"Merged: {len(all_rows)} rows → {out_csv}")
 
-# ---- Analysis ----
 print("\n=== Three-way comparison ===")
 groups = defaultdict(list)
 for r in all_rows:
@@ -88,7 +79,6 @@ for key in sorted(groups.keys()):
             rt  = sum(v[2] for v in vals)/len(vals)
             print(f"  {method:<20s} {impl:<8s} SHD={shd:>6.1f} F1={f1:.3f} {rt:.1f}s ({len(vals)} runs)")
 
-# ---- Build summary CSV ----
 print(f"\nSummary → {sum_csv}")
 num_cols = ["runtime","SHD","TPR","FPR","Precision","F1",
             "acceptance_rate","mean_edge_entropy","posterior_gap"]
@@ -104,7 +94,6 @@ for r in all_rows:
 sum_rows = []
 for k, vals in sum_groups.items():
     eg, ds, p, n, method, impl = k
-    # Count failures
     failed = sum(1 for r in all_rows
                  if r["experiment_group"]==eg and int(r["p"])==p and int(r["n"])==n
                  and r["method"]==method and r["implementation"]==impl

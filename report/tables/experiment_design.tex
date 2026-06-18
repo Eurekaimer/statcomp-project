@@ -1,0 +1,23 @@
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{2pt}
+\caption{实验设计总表}
+\label{tab:experiment_design}
+\begin{tabular}{p{1.8cm}p{2.8cm}p{2.0cm}p{2.2cm}p{2.7cm}p{2.5cm}}
+\toprule
+实验 & 目的 & p & n & 方法 & 输出指标
+\\
+\midrule
+Smoke test & 检查项目最小链路 & 8 & 100 & order, partition & SHD, F1, runtime \\
+手工实现验证 & 验证手工 MCMC 机制 & 8 & 120 & manual\_structure, manual\_order, manual\_partition & SHD, F1, runtime, accept rate \\
+小规模比较 & 比较 Order 与 Partition & 10, 20 & 200, 500 & order, partition & SHD, F1, runtime \\
+中等规模比较 & 观察 p 增大后的表现 & 30 & 500 & order, partition & SHD, F1, runtime \\
+iterative 补充 & 观察 iterative 策略的规模扩展表现 & 40 & 500 & iterative & SHD, F1, runtime \\
+样本量影响 & 分析 n 对恢复精度影响 & 20 & 100, 200, 500, 1000 & order, partition & SHD, F1, runtime \\
+边后验不确定性 & 比较结构不确定性 & 已有 raw 结果 & 已有 raw 结果 & 所有成功方法 & entropy, posterior gap \\
+父节点上限敏感性 & 检验父集约束影响 & 8 & 120 & 三种手工方法 & SHD, F1, runtime \\
+Benchmark 可选 & 预留标准网络对照 & Asia / Sachs / ALARM 可选 & 视数据而定 & 可选 & 若存在则报告 \\
+\bottomrule
+\end{tabular}
+\end{table}

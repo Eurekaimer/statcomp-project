@@ -1,0 +1,85 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% NKU course report style
+%%
+%% This style file is adapted for a Nankai University course report.
+%% Acknowledgements:
+%% - UCAS course report template by jweihe
+%%   GitHub: https://github.com/jweihe/UCAS_Latex_Template
+%% - Peking University course report template by Shawn Wang
+%%   Overleaf: https://www.overleaf.com/latex/templates/bei-jing-da-xue-ke-cheng-lun-wen-mo-ban/yntmqcktrzfh
+%%
+%% The present file keeps the cover-page idea and basic page style, while
+%% simplifying package dependencies and replacing hard-coded UCAS fields
+%% with NKU-oriented metadata commands.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{NKUReport}[2026/06/13 NKU course report style]
+
+\RequirePackage[left=2.50cm,right=2.50cm,top=2.50cm,bottom=2.50cm]{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{fancyhdr}
+
+\renewcommand{\abstractname}{\textbf{\large 摘\quad 要}}
+
+\makeatletter
+\newcommand\dlmu[2][4cm]{\hskip1pt\underline{\hb@xt@ #1{\hss#2\hss}}\hskip3pt}
+\makeatother
+
+\newcommand{\nkuReportType}{课程论文}
+\newcommand{\nkuReportTitle}{}
+\newcommand{\nkuCourseName}{统计计算}
+\newcommand{\nkuStudentName}{}
+\newcommand{\nkuStudentId}{}
+\newcommand{\nkuMajor}{统计学}
+\newcommand{\nkuCollege}{统计与数据科学学院}
+\newcommand{\nkuUniversity}{南开大学}
+\newcommand{\nkuTerm}{2026 Spring}
+\newcommand{\nkuLogoPath}{figures/南开.jpg}
+
+\newcommand{\nkuSetReportType}[1]{\renewcommand{\nkuReportType}{#1}}
+\newcommand{\nkuSetTitle}[1]{\renewcommand{\nkuReportTitle}{#1}}
+\newcommand{\nkuSetCourse}[1]{\renewcommand{\nkuCourseName}{#1}}
+\newcommand{\nkuSetName}[1]{\renewcommand{\nkuStudentName}{#1}}
+\newcommand{\nkuSetStudentId}[1]{\renewcommand{\nkuStudentId}{#1}}
+\newcommand{\nkuSetMajor}[1]{\renewcommand{\nkuMajor}{#1}}
+\newcommand{\nkuSetCollege}[1]{\renewcommand{\nkuCollege}{#1}}
+\newcommand{\nkuSetUniversity}[1]{\renewcommand{\nkuUniversity}{#1}}
+\newcommand{\nkuSetTerm}[1]{\renewcommand{\nkuTerm}{#1}}
+\newcommand{\nkuSetLogo}[1]{\renewcommand{\nkuLogoPath}{#1}}
+
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\fancyhead[C]{\fangsong \nkuCourseName \quad \nkuReportType}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\nkuMakeCover}{
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1.5cm}
+    \IfFileExists{\nkuLogoPath}{
+      \includegraphics[width=0.28\textwidth]{\nkuLogoPath}\par
+      \vspace{1.2cm}
+    }{}
+    {\heiti\zihao{1}\nkuReportType\par}
+    \vspace{1.0cm}
+    {\heiti\zihao{2}\bfseries \nkuReportTitle\par}
+    \vspace{1.8cm}
+    {\songti\zihao{4}
+    \begin{tabular}{rl}
+      课程：& \dlmu[9cm]{\nkuCourseName}\\[0.45cm]
+      姓名：& \dlmu[9cm]{\nkuStudentName}\\[0.45cm]
+      学号：& \dlmu[9cm]{\nkuStudentId}\\[0.45cm]
+      学院：& \dlmu[9cm]{\nkuCollege}\\[0.45cm]
+      学期：& \dlmu[9cm]{\nkuTerm}
+    \end{tabular}\par}
+    \vfill
+    {\songti\zihao{4}\nkuUniversity\par}
+    \vspace{0.4cm}
+    {\songti\zihao{4}\today\par}
+  \end{titlepage}
+}

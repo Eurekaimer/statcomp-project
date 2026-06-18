@@ -1,10 +1,10 @@
-# For teammates who already received renv.lock:
+# 根据 renv.lock 恢复环境。
 # source("restore_environment.R")
 
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 if (!file.exists("README.md") || !dir.exists("R") || !dir.exists("scripts")) {
-  stop("Please run this script from the repository root.", call. = FALSE)
+  stop("Please run this script from the Project directory.", call. = FALSE)
 }
 
 if (!requireNamespace("renv", quietly = TRUE)) {

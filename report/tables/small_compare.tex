@@ -1,0 +1,22 @@
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{2pt}
+\caption{小规模 Order MCMC 与 Partition MCMC 比较}
+\label{tab:small}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+方法 & p & n & 运行时间 & SHD & TPR & FPR & Precision & F1
+\\
+\midrule
+order & 10.000 & 200.0 & 1.150 & 3.333 & 0.796 & 0.038 & 0.758 & 0.776 \\
+partition & 10.000 & 200.0 & 5.027 & 3.000 & 0.787 & 0.038 & 0.746 & 0.766 \\
+order & 20.000 & 200.0 & 1.427 & 3.333 & 0.851 & 0.008 & 0.831 & 0.841 \\
+partition & 20.000 & 200.0 & 6.920 & 5.667 & 0.821 & 0.016 & 0.705 & 0.758 \\
+order & 10.000 & 500.0 & 1.327 & 3.000 & 0.796 & 0.034 & 0.781 & 0.789 \\
+partition & 10.000 & 500.0 & 5.450 & 1.667 & 0.889 & 0.021 & 0.868 & 0.878 \\
+order & 20.000 & 500.0 & 1.667 & 3.000 & 0.860 & 0.007 & 0.841 & 0.850 \\
+partition & 20.000 & 500.0 & 6.400 & 3.000 & 0.860 & 0.008 & 0.828 & 0.844 \\
+\bottomrule
+\end{tabular}
+\end{table}

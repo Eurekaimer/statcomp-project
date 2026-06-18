@@ -1,7 +1,4 @@
-"""
-Generate p=40 data for hybrid/iterative MCMC experiment (Kuipers et al. 2022).
-Saves data for R to consume, then R script picks it up automatically.
-"""
+# Generate hybrid data.
 import numpy as np, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from run_experiment import RNG, generate_data
@@ -26,5 +23,4 @@ for p in [40]:
             np.savetxt(f"{prefix}_adj.csv", true_adj.astype(int), delimiter=",", fmt="%d")
             print(f"Generated p={p} n={n} seed={seed}")
 
-print("Done. Now run in RStudio:")
-print("  source('scripts/medium_original_reproduction/run_r_hybrid.R')")
+print("Done.")

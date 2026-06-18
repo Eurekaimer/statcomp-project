@@ -1,10 +1,3 @@
-# run_r_hybrid.R — BiDAG iterative MCMC for p=40 (Kuipers et al. 2022)
-# Run from RStudio with Project/ as working directory, renv activated.
-#
-# Usage:
-#   setwd("<path-to-project>/Project")
-#   source("scripts/medium_original_reproduction/run_r_hybrid.R")
-
 suppressMessages({
   source("R/load_project.R")
   load_project()
@@ -15,7 +8,6 @@ OUT_CSV  <- "results/medium_original_reproduction/tables/hybrid_results.csv"
 MCMC_STEPS <- 800
 BURNIN     <- 150
 
-# Find p=40 supplement data files
 data_files <- list.files(DATA_DIR, pattern = "_data\\.csv$", full.names = TRUE)
 data_files <- data_files[grep("p(40|80)_", basename(data_files))]
 cat("Found", length(data_files), "hybrid data files\n")
