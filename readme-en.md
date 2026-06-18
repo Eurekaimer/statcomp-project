@@ -2,12 +2,7 @@
 
 [English version](readme-en.md) | [中文版](README.md)
 
-This is the project directory for the Statistical Computing course assignment. The final report is at:
-
-- `report/Report.pdf`
-- `report/Report.tex`
-
-The code mainly compares Structure MCMC, Order MCMC, Partition MCMC, and hybrid/iterative MCMC. R is the primary language, with Python used for supplementary control experiments and plotting.
+This is the code repository for the Statistical Computing course assignment. The code mainly compares Structure MCMC, Order MCMC, Partition MCMC, and hybrid/iterative MCMC. R is the primary language, with Python used for supplementary control experiments and plotting.
 
 ## Directory
 
@@ -16,7 +11,6 @@ R/          Core functions
 scripts/    Experiment and plotting scripts
 data/       Simulated data
 results/    Experiment results, tables, and figures
-report/     Report, references, report tables and figures
 notebooks/  Optional notebooks
 ```
 
@@ -131,49 +125,10 @@ uv run python build_report_assets.py
 cd ../..
 ```
 
-Output locations:
+Output location:
 
 ```text
 results/medium_original_reproduction/
-report/tables/medium_original_reproduction/
-report/figures/medium_original_reproduction/
-```
-
-## Regenerating the Report
-
-First, prepare the report tables and figures:
-
-```r
-source("scripts/build_report_assets.R")
-```
-
-Generate Python composite figures:
-
-```bash
-uv run --script scripts/plot_results.py
-uv run --script scripts/plot_concepts.py
-```
-
-Compile the report:
-
-```r
-source("scripts/compile_latex_report.R")
-```
-
-The generated PDF is at:
-
-```text
-report/Report.pdf
-```
-
-You can also compile manually:
-
-```bash
-cd report
-xelatex Report.tex
-bibtex Report
-xelatex Report.tex
-xelatex Report.tex
 ```
 
 ## Existing Results
@@ -181,7 +136,6 @@ xelatex Report.tex
 If you just want to view the results without rerunning experiments, see:
 
 ```text
-report/Report.pdf
 results/tables/
 results/figures/
 results/RESULT_INDEX.md

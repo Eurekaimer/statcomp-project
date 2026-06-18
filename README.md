@@ -2,12 +2,7 @@
 
 [English version](readme-en.md) | [中文版](README.md)
 
-这是统计计算课程大作业的项目目录。最终报告在：
-
-- `report/Report.pdf`
-- `report/Report.tex`
-
-代码主要比较 Structure MCMC、Order MCMC、Partition MCMC 和 hybrid/iterative MCMC。R 代码是主线，Python 主要用于部分对照实验和画图。
+这是统计计算课程大作业的代码仓库。代码主要比较 Structure MCMC、Order MCMC、Partition MCMC 和 hybrid/iterative MCMC。R 代码是主线，Python 主要用于部分对照实验和画图。
 
 ## 目录
 
@@ -16,7 +11,6 @@ R/          核心函数
 scripts/    实验脚本和画图脚本
 data/       模拟数据
 results/    实验结果、表格和图片
-report/     报告、参考文献、报告用表格和图片
 notebooks/  可选 notebook
 ```
 
@@ -135,45 +129,6 @@ cd ../..
 
 ```text
 results/medium_original_reproduction/
-report/tables/medium_original_reproduction/
-report/figures/medium_original_reproduction/
-```
-
-## 重新生成报告
-
-先整理报告用表格和图片：
-
-```r
-source("scripts/build_report_assets.R")
-```
-
-生成 Python 组合图：
-
-```bash
-uv run --script scripts/plot_results.py
-uv run --script scripts/plot_concepts.py
-```
-
-编译报告：
-
-```r
-source("scripts/compile_latex_report.R")
-```
-
-生成的 PDF 在：
-
-```text
-report/Report.pdf
-```
-
-也可以手动编译：
-
-```bash
-cd report
-xelatex Report.tex
-bibtex Report
-xelatex Report.tex
-xelatex Report.tex
 ```
 
 ## 已有结果
@@ -181,7 +136,6 @@ xelatex Report.tex
 如果只是看结果，不需要重新跑实验，直接看：
 
 ```text
-report/Report.pdf
 results/tables/
 results/figures/
 results/RESULT_INDEX.md
